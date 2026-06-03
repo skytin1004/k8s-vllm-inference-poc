@@ -2,6 +2,46 @@
 
 This tutorial documents the exact path I took to run vLLM on Kubernetes and get a real response from a Qwen model through an OpenAI-compatible API.
 
+## Why This Experience Matters
+
+This project may look small, but it mirrors a very real situation that engineering teams run into when they try to bring LLM features closer to production.
+
+Imagine a backend or platform team gets a request like this:
+
+```text
+"We want to add an internal AI assistant."
+"We need to test an open model before committing to a vendor."
+"We want an API that looks like OpenAI, but runs inside our own Kubernetes cluster."
+"We need to understand the operational cost before buying GPUs or scaling anything."
+```
+
+At that point, the hard part is not just choosing a model. The team has to answer practical questions:
+
+- Can we run an LLM server inside Kubernetes at all?
+- Can application code call it using a familiar OpenAI-style API?
+- Can we put a gateway in front of it so auth, logging, routing, and rate limits can be added later?
+- What happens when the inference Pod restarts?
+- How much memory and disk does the serving path need before it is even useful?
+- Can we benchmark the endpoint without pretending the model quality is the main result?
+
+That is why I treated this as an infrastructure PoC rather than a model evaluation project. I wanted to prove the serving path first:
+
+```text
+Client request
+  -> gateway
+  -> Kubernetes Service
+  -> vLLM server
+  -> model response
+```
+
+Once this path works, the model can be swapped, resources can be resized, authentication can be added, and benchmark results can guide the next decision. Without this basic serving path, every model discussion is still theoretical.
+
+> [!NOTE]
+> In a real team, this kind of PoC is useful before a larger platform investment. It gives backend, DevOps, and ML engineers a shared baseline for how an LLM endpoint behaves in Kubernetes.
+
+> [!TIP]
+> Keeping the endpoint OpenAI-compatible is a practical design choice. It lets client code use a familiar request shape while the backend can still switch between local models, hosted models, or future routing logic.
+
 My first goal was simple:
 
 ```text
@@ -214,7 +254,6 @@ k8s-vllm-inference-poc/
 |   |-- engineering-handoff.md
 |   |-- poc-report.md
 |   |-- runtime-validation.md
-|   |-- tutorial-ko.md
 |   `-- tutorial.md
 |-- gateway/
 |   |-- Dockerfile

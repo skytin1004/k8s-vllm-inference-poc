@@ -26,7 +26,6 @@ Benchmark Client
 See [diagrams/architecture.md](diagrams/architecture.md) for the Mermaid diagram.
 
 For a complete step-by-step build guide, see [docs/tutorial.md](docs/tutorial.md).
-For the Korean version, see [docs/tutorial-ko.md](docs/tutorial-ko.md).
 
 ## Repository Layout
 
@@ -49,7 +48,6 @@ k8s-vllm-inference-poc/
 |   |-- engineering-handoff.md
 |   |-- poc-report.md
 |   |-- runtime-validation.md
-|   |-- tutorial-ko.md
 |   `-- tutorial.md
 |-- gateway/
 |   |-- Dockerfile

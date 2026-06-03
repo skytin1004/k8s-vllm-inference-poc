@@ -96,11 +96,10 @@
     <text x="190" y="30" text-anchor="middle" class="chipText">LEARN</text>
     <text x="20" y="72" class="purpose">Tutorials and handoff docs</text>
     <text x="20" y="112" class="file">tutorial.md</text>
-    <text x="20" y="137" class="file">tutorial-ko.md</text>
-    <text x="20" y="162" class="file">runtime-validation.md</text>
-    <text x="20" y="187" class="file">poc-report.md</text>
-    <text x="20" y="212" class="file">engineering-handoff.md</text>
-    <text x="20" y="237" class="file">demo-script.md</text>
+    <text x="20" y="137" class="file">runtime-validation.md</text>
+    <text x="20" y="162" class="file">poc-report.md</text>
+    <text x="20" y="187" class="file">engineering-handoff.md</text>
+    <text x="20" y="212" class="file">demo-script.md</text>
   </g>
 
   <g transform="translate(166 584)">
