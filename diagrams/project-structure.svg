@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="760" viewBox="0 0 1100 760" role="img" aria-labelledby="title desc">
+  <title id="title">Project structure for k8s-vllm-inference-poc</title>
+  <desc id="desc">A clean repository structure diagram showing gateway, Kubernetes manifests, benchmark, tests, scripts, docs, and diagrams.</desc>
+
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .root { fill: #111827; }
+      .rootText { fill: #ffffff; font: 700 24px "Segoe UI", Arial, sans-serif; }
+      .rootSub { fill: #d1d5db; font: 400 14px "Segoe UI", Arial, sans-serif; }
+      .line { stroke: #94a3b8; stroke-width: 2; fill: none; }
+      .card { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; rx: 8; }
+      .label { fill: #0f172a; font: 700 18px "Segoe UI", Arial, sans-serif; }
+      .purpose { fill: #475569; font: 400 13px "Segoe UI", Arial, sans-serif; }
+      .file { fill: #1f2937; font: 400 13px "Consolas", "Courier New", monospace; }
+      .chip { fill: #eef2ff; stroke: #c7d2fe; stroke-width: 1; rx: 6; }
+      .chipText { fill: #3730a3; font: 700 11px "Segoe UI", Arial, sans-serif; letter-spacing: 0.4px; }
+      .accentGateway { fill: #eff6ff; }
+      .accentK8s { fill: #ecfdf5; }
+      .accentBench { fill: #fff7ed; }
+      .accentDocs { fill: #fdf2f8; }
+      .accentTest { fill: #f0f9ff; }
+      .accentScript { fill: #f5f3ff; }
+      .accentDiagram { fill: #f7fee7; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1100" height="760"/>
+
+  <rect x="310" y="34" width="480" height="86" rx="8" class="root"/>
+  <text x="550" y="72" text-anchor="middle" class="rootText">k8s-vllm-inference-poc</text>
+  <text x="550" y="99" text-anchor="middle" class="rootSub">Kubernetes + vLLM OpenAI-compatible inference PoC</text>
+
+  <path d="M550 120 V156" class="line"/>
+  <path d="M156 156 H944" class="line"/>
+  <path d="M156 156 V188" class="line"/>
+  <path d="M418 156 V188" class="line"/>
+  <path d="M682 156 V188" class="line"/>
+  <path d="M944 156 V188" class="line"/>
+
+  <path d="M286 520 V552" class="line"/>
+  <path d="M286 552 H814" class="line"/>
+  <path d="M286 552 V584" class="line"/>
+  <path d="M462 552 V584" class="line"/>
+  <path d="M638 552 V584" class="line"/>
+  <path d="M814 552 V584" class="line"/>
+
+  <g transform="translate(36 188)">
+    <rect width="240" height="270" class="card"/>
+    <rect width="240" height="48" rx="8" class="accentGateway"/>
+    <text x="20" y="30" class="label">gateway/</text>
+    <rect x="154" y="15" width="66" height="22" class="chip"/>
+    <text x="187" y="30" text-anchor="middle" class="chipText">API</text>
+    <text x="20" y="72" class="purpose">FastAPI proxy in front of vLLM</text>
+    <text x="20" y="112" class="file">main.py</text>
+    <text x="20" y="137" class="purpose">Forwards chat completions</text>
+    <text x="20" y="177" class="file">Dockerfile</text>
+    <text x="20" y="202" class="purpose">Builds the gateway image</text>
+    <text x="20" y="242" class="file">requirements.txt</text>
+  </g>
+
+  <g transform="translate(300 188)">
+    <rect width="240" height="312" class="card"/>
+    <rect width="240" height="48" rx="8" class="accentK8s"/>
+    <text x="20" y="30" class="label">k8s/</text>
+    <rect x="148" y="15" width="72" height="22" class="chip"/>
+    <text x="184" y="30" text-anchor="middle" class="chipText">DEPLOY</text>
+    <text x="20" y="72" class="purpose">Kubernetes manifests</text>
+    <text x="20" y="112" class="file">namespace.yaml</text>
+    <text x="20" y="137" class="file">vllm-service.yaml</text>
+    <text x="20" y="162" class="file">gateway-service.yaml</text>
+    <text x="20" y="187" class="file">vllm-deployment.yaml</text>
+    <text x="20" y="212" class="file">vllm-deployment-cpu.yaml</text>
+    <text x="20" y="237" class="file">gateway-deployment.yaml</text>
+    <text x="20" y="262" class="file">kustomization.yaml</text>
+  </g>
+
+  <g transform="translate(564 188)">
+    <rect width="240" height="270" class="card"/>
+    <rect width="240" height="48" rx="8" class="accentBench"/>
+    <text x="20" y="30" class="label">benchmark/</text>
+    <rect x="146" y="15" width="74" height="22" class="chip"/>
+    <text x="183" y="30" text-anchor="middle" class="chipText">MEASURE</text>
+    <text x="20" y="72" class="purpose">Traffic and latency checks</text>
+    <text x="20" y="112" class="file">benchmark.py</text>
+    <text x="20" y="137" class="purpose">Runs concurrent requests</text>
+    <text x="20" y="177" class="file">sample-results.csv</text>
+    <text x="20" y="202" class="purpose">Example result format</text>
+  </g>
+
+  <g transform="translate(828 188)">
+    <rect width="240" height="270" class="card"/>
+    <rect width="240" height="48" rx="8" class="accentDocs"/>
+    <text x="20" y="30" class="label">docs/</text>
+    <rect x="160" y="15" width="60" height="22" class="chip"/>
+    <text x="190" y="30" text-anchor="middle" class="chipText">LEARN</text>
+    <text x="20" y="72" class="purpose">Tutorials and handoff docs</text>
+    <text x="20" y="112" class="file">tutorial.md</text>
+    <text x="20" y="137" class="file">tutorial-ko.md</text>
+    <text x="20" y="162" class="file">runtime-validation.md</text>
+    <text x="20" y="187" class="file">poc-report.md</text>
+    <text x="20" y="212" class="file">engineering-handoff.md</text>
+    <text x="20" y="237" class="file">demo-script.md</text>
+  </g>
+
+  <g transform="translate(166 584)">
+    <rect width="240" height="120" class="card"/>
+    <rect width="240" height="42" rx="8" class="accentTest"/>
+    <text x="20" y="27" class="label">tests/</text>
+    <rect x="160" y="11" width="60" height="22" class="chip"/>
+    <text x="190" y="26" text-anchor="middle" class="chipText">CHECK</text>
+    <text x="20" y="70" class="file">smoke_test.py</text>
+    <text x="20" y="95" class="purpose">Fast confidence checks</text>
+  </g>
+
+  <g transform="translate(430 584)">
+    <rect width="240" height="120" class="card"/>
+    <rect width="240" height="42" rx="8" class="accentScript"/>
+    <text x="20" y="27" class="label">scripts/</text>
+    <rect x="150" y="11" width="70" height="22" class="chip"/>
+    <text x="185" y="26" text-anchor="middle" class="chipText">PREPARE</text>
+    <text x="20" y="70" class="file">preflight.py</text>
+    <text x="20" y="95" class="purpose">Checks cluster readiness</text>
+  </g>
+
+  <g transform="translate(694 584)">
+    <rect width="240" height="120" class="card"/>
+    <rect width="240" height="42" rx="8" class="accentDiagram"/>
+    <text x="20" y="27" class="label">diagrams/</text>
+    <rect x="156" y="11" width="64" height="22" class="chip"/>
+    <text x="188" y="26" text-anchor="middle" class="chipText">VISUAL</text>
+    <text x="20" y="70" class="file">architecture.md</text>
+    <text x="20" y="95" class="file">project-structure.svg</text>
+  </g>
+</svg>

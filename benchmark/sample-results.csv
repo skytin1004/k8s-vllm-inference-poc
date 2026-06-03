@@ -1,0 +1,5 @@
+request_id,success,status_code,latency_ms,output_tokens,error
+1,True,200,842.31,64,
+2,True,200,901.22,67,
+3,True,200,877.45,62,
+4,False,504,60000.00,0,upstream_timeout
