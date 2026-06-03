@@ -64,6 +64,12 @@ avg_latency_ms: approximately 4495
 
 The project originally explored Phi-4 mini, but the full BF16 checkpoint was too large for the local disk and memory budget. The default model was changed to `Qwen/Qwen2.5-0.5B-Instruct` because this PoC cares about proving the OpenAI-compatible serving path rather than model quality.
 
+An optional Phi-4 mini manifest is included for larger-model experiments after the default Qwen path has been validated:
+
+```powershell
+kubectl apply -f k8s/vllm-deployment-phi4-mini.yaml
+```
+
 Observed rough checkpoint sizes:
 
 ```text

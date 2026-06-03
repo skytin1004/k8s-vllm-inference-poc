@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm
+  namespace: llm-inference-poc
+  labels:
+    app: vllm
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  progressDeadlineSeconds: 1800
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      enableServiceLinks: false
+      volumes:
+        - name: shm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 8Gi
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai-cpu:latest-x86_64
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: VLLM_CPU_KVCACHE_SPACE
+              value: "4"
+            - name: VLLM_CPU_OMP_THREADS_BIND
+              value: "0-3"
+            - name: HF_HUB_DISABLE_XET
+              value: "1"
+          args:
+            - --host
+            - "0.0.0.0"
+            - --port
+            - "8000"
+            - --model
+            - microsoft/Phi-4-mini-instruct
+            - --served-model-name
+            - phi-4-mini-instruct
+            - --max-model-len
+            - "2048"
+            - --dtype
+            - bfloat16
+            - --enforce-eager
+          ports:
+            - name: http
+              containerPort: 8000
+          volumeMounts:
+            - name: shm
+              mountPath: /dev/shm
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 120
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: "2"
+              memory: 10Gi
+            limits:
+              cpu: "4"
+              memory: 16Gi
