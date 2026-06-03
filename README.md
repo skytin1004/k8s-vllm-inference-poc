@@ -7,7 +7,7 @@ The project focuses on inference serving workflow, benchmarking, and failure rec
 ## What This Project Does
 
 - Deploys a vLLM OpenAI-compatible chat completions server on Kubernetes.
-- Uses `Qwen/Qwen2.5-0.5B-Instruct` as the default small functional-test model, with an optional `microsoft/Phi-4-mini-instruct` profile for larger model experiments.
+- Uses `Qwen/Qwen2.5-0.5B-Instruct` as the default small functional-test model.
 - Places a small FastAPI gateway in front of the vLLM service.
 - Provides Kubernetes manifests for the inference server, gateway, and services.
 - Includes an async benchmark script for concurrent chat completion traffic.
@@ -61,7 +61,6 @@ k8s-vllm-inference-poc/
 |   |-- kustomization.yaml
 |   |-- namespace.yaml
 |   |-- vllm-deployment-cpu.yaml
-|   |-- vllm-deployment-phi4-mini.yaml
 |   |-- vllm-deployment.yaml
 |   `-- vllm-service.yaml
 |-- scripts/
@@ -154,16 +153,6 @@ The CPU manifest serves `Qwen/Qwen2.5-0.5B-Instruct` as `qwen2.5-0.5b-instruct`,
 
 If you want to reserve vLLM for a specific Kubernetes node, add a cluster-specific `nodeSelector` to `k8s/vllm-deployment-cpu.yaml`. The checked-in manifest avoids node pinning so it can run on different clusters without local hostnames.
 
-For a larger optional model, apply the Phi-4 mini manifest:
-
-```powershell
-python scripts/preflight.py --required-memory-gi 10 --check-docker --min-docker-memory-gi 12
-kubectl apply -f k8s/vllm-deployment-phi4-mini.yaml
-kubectl -n llm-inference-poc rollout status deployment/vllm --timeout=30m
-```
-
-The Phi-4 mini profile serves `microsoft/Phi-4-mini-instruct` as `phi-4-mini-instruct`. It requests more CPU and memory than the default Qwen profile and is meant as a higher-resource experiment, not the lowest-friction first run.
-
 Port-forward the gateway:
 
 ```powershell
@@ -238,25 +227,6 @@ The benchmark default model is `qwen2.5-0.5b-instruct`, matching the served mode
 - Memory and GPU resource limits if the new model requires them.
 
 `Qwen/Qwen2.5-0.5B-Instruct` is used by default because it is small enough for local functional testing while still exercising a real OpenAI-compatible chat completion path. If model quality matters later, swap in a larger or quantized checkpoint and resize resources accordingly.
-
-Available model profiles:
-
-| Profile | Manifest | Served model name | Best for |
-| --- | --- | --- | --- |
-| Qwen small default | `k8s/vllm-deployment.yaml` or `k8s/vllm-deployment-cpu.yaml` | `qwen2.5-0.5b-instruct` | Low-resource functional validation |
-| Phi-4 mini optional | `k8s/vllm-deployment-phi4-mini.yaml` | `phi-4-mini-instruct` | Larger-model experiments when the cluster has more memory |
-
-When switching to Phi-4 mini, benchmark with the matching served model name:
-
-```powershell
-python benchmark/benchmark.py `
-  --url http://localhost:8080 `
-  --model phi-4-mini-instruct `
-  --requests 20 `
-  --concurrency 2 `
-  --max-tokens 128 `
-  --output benchmark/results-phi4-mini.csv
-```
 
 ## Limitations
 

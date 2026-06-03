@@ -71,9 +71,8 @@
     <text x="20" y="162" class="file">gateway-service.yaml</text>
     <text x="20" y="187" class="file">vllm-deployment.yaml</text>
     <text x="20" y="212" class="file">vllm-deployment-cpu.yaml</text>
-    <text x="20" y="237" class="file">vllm-deployment-phi4-mini.yaml</text>
-    <text x="20" y="262" class="file">gateway-deployment.yaml</text>
-    <text x="20" y="287" class="file">kustomization.yaml</text>
+    <text x="20" y="237" class="file">gateway-deployment.yaml</text>
+    <text x="20" y="262" class="file">kustomization.yaml</text>
   </g>
 
   <g transform="translate(564 188)">

@@ -226,7 +226,6 @@ k8s-vllm-inference-poc/
 |   |-- kustomization.yaml
 |   |-- namespace.yaml
 |   |-- vllm-deployment-cpu.yaml
-|   |-- vllm-deployment-phi4-mini.yaml
 |   |-- vllm-deployment.yaml
 |   `-- vllm-service.yaml
 |-- scripts/
@@ -778,33 +777,6 @@ The practical fix was to add:
 ```
 
 This made startup behavior more manageable for this PoC.
-
-### Optional: Try Phi-4 Mini Later
-
-After the Qwen path works, Phi-4 mini is a good next experiment if the cluster has enough memory.
-
-Use the optional manifest:
-
-```powershell
-python scripts/preflight.py --required-memory-gi 10 --check-docker --min-docker-memory-gi 12
-kubectl apply -f k8s/vllm-deployment-phi4-mini.yaml
-kubectl -n llm-inference-poc rollout status deployment/vllm --timeout=30m
-```
-
-Then benchmark with the matching served model name:
-
-```powershell
-python benchmark/benchmark.py `
-  --url http://localhost:8080 `
-  --model phi-4-mini-instruct `
-  --requests 20 `
-  --concurrency 2 `
-  --max-tokens 128 `
-  --output benchmark/results-phi4-mini.csv
-```
-
-> [!TIP]
-> I would still run Qwen first. It proves the Kubernetes and gateway wiring quickly. Phi-4 mini is better as the next step once the serving path is already known to work.
 
 ### Issue 4: Hugging Face Xet Downloading Was Unstable
 
