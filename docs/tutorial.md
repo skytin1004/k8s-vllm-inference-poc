@@ -230,34 +230,88 @@ Getting a working response path is the priority.
 
 For that goal, `Qwen/Qwen2.5-0.5B-Instruct` was a better default.
 
-### Full Model vs Quantized Inference
+> [!WARNING]
+> A smaller model makes the PoC easier to run, but it does not represent production quality. It proves the serving path, not the final product behavior.
 
-This was the point where I had to ask a more practical question:
+## Full Model vs Quantized Inference
+
+This decision deserves its own section because it is one of the first real tradeoffs in LLM infrastructure work.
+
+At first, I thought the right thing to do was obvious:
 
 ```text
-Do I really need to load the full model first?
-Or should I start with a smaller or quantized model so the serving path can be tested safely?
+"Load the full model.
+That will be the most realistic test."
 ```
 
-My first instinct was to run the full model because it feels like the most honest test. If the final service will use a strong model, why not start there?
+That instinct makes sense. If the final service is supposed to use a capable model, testing with the full model feels more honest. It sounds like the shortest path to the real answer.
 
-In practice, that choice had a large tradeoff. A full BF16 or FP16 checkpoint keeps the model weights in a higher-precision format. That can be better for model quality, but it also means:
+But for an early PoC, that can be the wrong starting point.
+
+### What "full model" means
+
+An LLM is stored as a set of learned numbers called weights. Those weights are saved in a model checkpoint.
+
+A full BF16 or FP16 checkpoint keeps those numbers in a relatively high-precision format. In simple terms, it keeps more detail for each number.
+
+That can be good for model quality, but it makes the model heavier to operate:
 
 - larger downloads
 - more disk usage
 - more memory pressure
 - longer cold starts
 - higher chance of Kubernetes scheduling failures
-- more time spent debugging infrastructure before seeing a single response
+- more time spent debugging infrastructure before getting the first response
 
-For this PoC, that was the wrong first battle. I was not trying to prove that Phi-4 mini gave better answers. I was trying to prove that a Kubernetes workload could expose an OpenAI-compatible inference endpoint and survive the basic operational workflow.
+For non-developers, I would describe it like this:
 
-Quantized inference is one way to reduce that pressure. Instead of storing and loading weights in full BF16 or FP16 precision, a quantized checkpoint stores weights in a lower-bit format such as INT8 or INT4. Common serving-oriented formats include names like `GPTQ` and `AWQ`.
+```text
+A full model is like carrying the complete, high-resolution version of the model.
+It preserves more detail, but it is heavier to move, load, and run.
+```
+
+That extra weight matters a lot in Kubernetes. Kubernetes has to find a node with enough memory, pull the container image, download or cache the model, start the server, pass health checks, and only then receive traffic.
+
+If the model is too large for the environment, the project can fail before I learn anything useful about the API design.
+
+### What quantized inference means
+
+Quantized inference is a way to make a model lighter for serving.
+
+Instead of storing and loading weights in full BF16 or FP16 precision, a quantized checkpoint stores them in a lower-bit format such as INT8 or INT4. The model keeps the same general structure, but each weight is represented with less precision.
+
+In plain language:
+
+```text
+Quantization is like making a smaller, compressed version of the model weights.
+The model becomes easier to serve, but there may be some quality or compatibility tradeoff.
+```
+
+Common LLM serving quantization names include `GPTQ` and `AWQ`.
 
 > [!NOTE]
 > I initially thought of this as "maybe GPT something"; the term I wanted was `GPTQ`. GPTQ is a quantization method, not a model family. AWQ is another common quantization method used for LLM serving.
 
-The practical tradeoff looks like this:
+### Why I did not start with quantization either
+
+Quantization is useful, but it is still another variable.
+
+For this PoC, I wanted to avoid mixing too many questions at once:
+
+```text
+Is Kubernetes configured correctly?
+Is vLLM running?
+Is the gateway forwarding requests?
+Is the OpenAI-compatible API shape working?
+Is the model checkpoint compatible?
+Is quantization affecting quality or runtime behavior?
+```
+
+If all of those are tested at the same time, debugging becomes confusing.
+
+So I chose a simpler first step: use a small model that is easy to run, then leave larger or quantized models for later.
+
+### The practical tradeoff
 
 | Choice | What it optimizes for | What it costs |
 | --- | --- | --- |
@@ -265,9 +319,11 @@ The practical tradeoff looks like this:
 | Quantized model such as GPTQ, AWQ, or INT4 | Smaller footprint and easier serving on limited hardware | Possible quality loss, compatibility checks, and sometimes different performance behavior |
 | Smaller model such as Qwen 0.5B | Fastest way to prove the infrastructure path | Does not represent final model quality |
 
-That is why I chose the third option first. A small Qwen model let me validate the Kubernetes, gateway, vLLM, and benchmark path without confusing infrastructure problems with model-size problems.
+This is why I chose the third option first.
 
-Later, if the endpoint design is proven, the next step can be one of these:
+A small Qwen model let me validate the Kubernetes, gateway, vLLM, and benchmark path without confusing infrastructure problems with model-size problems.
+
+After the serving path is proven, the next step can be one of these:
 
 - swap in a larger full-precision model on a larger node
 - use a vLLM-compatible GPTQ or AWQ checkpoint
@@ -275,10 +331,7 @@ Later, if the endpoint design is proven, the next step can be one of these:
 - resize Kubernetes requests and limits based on real benchmark results
 
 > [!NOTE]
-> QLoRA is mainly a fine-tuning technique. For this PoC, I was not training a model. I was trying to serve one. The more direct solution was to choose a smaller model or a vLLM-compatible quantized checkpoint.
-
-> [!WARNING]
-> A smaller model makes the PoC easier to run, but it does not represent production quality. It proves the serving path, not the final product behavior.
+> QLoRA is mainly a fine-tuning technique. It is useful when adapting a model with limited training resources. This PoC was about inference, not training, so QLoRA was not the direct answer. For serving, the more relevant choices were a smaller model, a full-precision larger model, or a vLLM-compatible quantized checkpoint.
 
 ## Project Layout
 
